@@ -19,6 +19,8 @@ async function запустить(uri) {
     vscode.window.showErrorMessage('Компилятор «цуяк» не найден в PATH.');
     return;
   }
+  // Генерация машинного кода поддерживается только на Linux x86_64, на остальных платформах интерпретируем.
+  const команда = process.platform === 'linux' && process.arch === 'x64' ? ['комп', '-пуск'] : ['интер'];
   const документ = vscode.workspace.textDocuments.find(д => д.uri.toString() === uri.toString());
   if (документ && документ.isDirty) await документ.save();
 
@@ -30,7 +32,7 @@ async function запустить(uri) {
     'цуя',
     new vscode.ShellExecution(
       { value: компилятор, quoting: strong },
-      [{ value: 'комп', quoting: strong }, { value: '-пуск', quoting: strong }, { value: uri.fsPath, quoting: strong }],
+      команда.map(value => ({ value, quoting: strong })).concat([{ value: uri.fsPath, quoting: strong }]),
       { cwd: папкаЗапуска(uri) }),
     []);
   задача.presentationOptions = { reveal: vscode.TaskRevealKind.Always, clear: true, focus: true };
