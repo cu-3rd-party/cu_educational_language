@@ -12,5 +12,5 @@
     "increaseIndentPattern": "(^|\\s)нч\\s*$",
     "decreaseIndentPattern": "^\\s*кц\\b"
   },
-  "wordPattern": "[\\p{L}_][\\p{L}\\p{N}_]*|\\d+(\\.\\d+)?"
+  "wordPattern": "[A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*|\\d+(\\.\\d+)?"
 }
