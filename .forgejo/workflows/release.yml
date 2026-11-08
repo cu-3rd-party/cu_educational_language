@@ -1,0 +1,73 @@
+name: Release
+
+# Пуш тега v* собирает цуяк под Linux x86_64 и Windows x86_64, пакует расширение VS Code (.vsix)
+# и создаёт черновик релиза с ними; опубликовать черновик — руками в Forgejo.
+# Имена файлов в релизе ASCII, чтобы не возиться с кодированием кириллицы в URL.
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    runs-on: homelab-docker
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: |
+          if ! command -v rustc >/dev/null; then
+            curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup target add x86_64-pc-windows-gnu
+
+      - name: Install MinGW
+        run: |
+          SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+          $SUDO apt-get update
+          $SUDO apt-get install -y --no-install-recommends gcc-mingw-w64-x86-64
+
+      - name: Build цуяк
+        run: |
+          mkdir -p dist
+          rustc -O -o dist/tsuyak-linux-x86_64 исходники/цуяк.rs
+          strip dist/tsuyak-linux-x86_64
+          rustc -O --target x86_64-pc-windows-gnu -o dist/tsuyak-windows-x86_64.exe исходники/цуяк.rs
+
+      - name: Build VS Code extension
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd редакторы/vscode
+          npm ci
+          # Версия расширения берётся из тега (v1.2.3 -> 1.2.3).
+          npx --yes @vscode/vsce package "${TAG#v}" --no-git-tag-version --allow-missing-repository \
+            -o "../../dist/tsuya-${TAG#v}.vsix"
+
+      - name: Checksums
+        run: (cd dist && sha256sum * > SHA256SUMS)
+
+      - name: Draft release
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          api="$GITHUB_SERVER_URL/api/v1/repos/$GITHUB_REPOSITORY"
+          auth="Authorization: token $TOKEN"
+          # a re-run replaces its own draft; a published release for the tag is left alone (POST fails)
+          for id in $(curl -fsS -H "$auth" "$api/releases?draft=true&limit=50" |
+                      jq -r --arg t "$TAG" '.[] | select(.tag_name == $t and .draft) | .id'); do
+            curl -fsS -H "$auth" -X DELETE "$api/releases/$id"
+          done
+          id=$(jq -n --arg t "$TAG" '{tag_name: $t, name: $t, draft: true}' |
+               curl -fsS -H "$auth" -H 'Content-Type: application/json' -X POST "$api/releases" -d @- | jq -r .id)
+          for f in dist/*; do
+            curl -fsS -H "$auth" -X POST "$api/releases/$id/assets?name=$(basename "$f")" -F "attachment=@$f" >/dev/null
+            echo "attached $(basename "$f")"
+          done
+          echo "draft release $TAG: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases"
