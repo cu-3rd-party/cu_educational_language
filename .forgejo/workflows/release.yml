@@ -1,7 +1,8 @@
 name: Release
 
-# Пуш тега v* собирает цуяк под Linux x86_64 и Windows x86_64, пакует расширение VS Code (.vsix)
-# и создаёт черновик релиза с ними; опубликовать черновик — руками в Forgejo.
+# Пуш тега v* собирает цуяк под Linux x86_64 и Windows x86_64 и пакует расширение VS Code (.vsix):
+# по одному с встроенным компилятором для linux-x64 и win32-x64 и универсальное без него
+# (ищет цуяк в PATH). Создаётся черновик релиза; опубликовать черновик — руками в Forgejo.
 # Имена файлов в релизе ASCII, чтобы не возиться с кодированием кириллицы в URL.
 on:
   push:
@@ -45,8 +46,15 @@ jobs:
           cd редакторы/vscode
           npm ci
           # Версия расширения берётся из тега (v1.2.3 -> 1.2.3).
-          npx --yes @vscode/vsce package "${TAG#v}" --no-git-tag-version --allow-missing-repository \
-            -o "../../dist/tsuya-${TAG#v}.vsix"
+          v="${TAG#v}"
+          pack() { npx --yes @vscode/vsce package "$v" --no-git-tag-version --allow-missing-repository "$@"; }
+          pack -o "../../dist/tsuya-$v.vsix"
+          mkdir -p bin
+          cp ../../dist/tsuyak-linux-x86_64 bin/tsuyak
+          pack --target linux-x64 -o "../../dist/tsuya-$v-linux-x64.vsix"
+          rm bin/tsuyak
+          cp ../../dist/tsuyak-windows-x86_64.exe bin/tsuyak.exe
+          pack --target win32-x64 -o "../../dist/tsuya-$v-win32-x64.vsix"
 
       - name: Checksums
         run: (cd dist && sha256sum * > SHA256SUMS)

@@ -16,7 +16,7 @@ async function запустить(uri) {
   if (!uri || uri.scheme !== 'file') return;
   const компилятор = найтиКомпилятор();
   if (!компилятор) {
-    vscode.window.showErrorMessage('Компилятор «цуяк» не найден в PATH.');
+    vscode.window.showErrorMessage('Компилятор «цуяк» не найден (ни встроенный, ни в PATH).');
     return;
   }
   // Генерация машинного кода поддерживается только на Linux x86_64, на остальных платформах интерпретируем.

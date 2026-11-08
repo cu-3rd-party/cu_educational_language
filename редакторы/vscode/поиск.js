@@ -1,18 +1,20 @@
-// Общий поиск компилятора «цуяк» в PATH для клиента и сервера.
+// Общий поиск компилятора «цуяк» для клиента и сервера: сначала встроенный в расширение
+// (bin/tsuyak, кладётся при сборке релиза), затем PATH.
 const fs = require('fs');
 const path = require('path');
 
 function найтиКомпилятор() {
-  const имя = process.platform === 'win32' ? 'цуяк.exe' : 'цуяк';
+  const exe = process.platform === 'win32' ? '.exe' : '';
+  const кандидаты = [path.join(__dirname, 'bin', 'tsuyak' + exe)];
   for (const папка of (process.env.PATH || '').split(path.delimiter)) {
-    if (!папка) continue;
-    const кандидат = path.join(папка, имя);
-    try {
-      fs.accessSync(кандидат, fs.constants.X_OK);
-      if (fs.statSync(кандидат).isFile()) return кандидат;
-    } catch (_) { /* не подходит, ищем дальше */ }
+    if (папка) кандидаты.push(path.join(папка, 'цуяк' + exe));
   }
-  return null;
+  return кандидаты.find(к => {
+    try {
+      fs.accessSync(к, fs.constants.X_OK);
+      return fs.statSync(к).isFile();
+    } catch (_) { return false; }
+  }) || null;
 }
 
 // Компилятор ищет модули в «.» и «./модули» относительно текущей папки, поэтому
