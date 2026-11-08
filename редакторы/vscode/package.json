@@ -1,0 +1,61 @@
+{
+  "name": "tsuya",
+  "displayName": "Хороший Учебный Язык (ЦУЯ)",
+  "description": "Подсветка синтаксиса языка ЦУЯ",
+  "version": "0.2.0",
+  "publisher": "tsuya",
+  "license": "SEE LICENSE IN ../../ЛИЦЕНЗИЯ",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tsuya",
+        "aliases": [
+          "ЦУЯ",
+          "tsuya"
+        ],
+        "extensions": [
+          ".цуя"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tsuya",
+        "scopeName": "source.tsuya",
+        "path": "./syntaxes/tsuya.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "tsuya.run",
+        "title": "ЦУЯ: Запустить файл",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "tsuya.run",
+          "when": "resourceLangId == tsuya",
+          "group": "navigation@1"
+        }
+      ]
+    }
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:tsuya"
+  ],
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ЦУЯ",
+  "scopeName": "source.tsuya",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#declarations" },
+    { "include": "#types" },
+    { "include": "#builtins" },
+    { "include": "#calls" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.tsuya", "match": "//.*$" },
+        {
+          "name": "comment.block.tsuya",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [{ "include": "#nested-comment" }]
+        }
+      ]
+    },
+    "nested-comment": {
+      "begin": "/\\*",
+      "end": "\\*/",
+      "name": "comment.block.tsuya",
+      "patterns": [{ "include": "#nested-comment" }]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.tsuya",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [{ "include": "#escape" }]
+        },
+        {
+          "name": "string.quoted.other.tsuya",
+          "begin": "«",
+          "end": "»",
+          "patterns": [{ "include": "#escape" }, { "include": "#nested-string" }]
+        }
+      ]
+    },
+    "nested-string": {
+      "name": "string.quoted.other.tsuya",
+      "begin": "«",
+      "end": "»",
+      "patterns": [{ "include": "#escape" }, { "include": "#nested-string" }]
+    },
+    "escape": {
+      "name": "constant.character.escape.tsuya",
+      "match": "\\\\[нт\\\\\"«»]"
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hex.tsuya", "match": "16%[0-9АБЦДЕФабцдеф]*" },
+        { "name": "constant.numeric.float.tsuya", "match": "\\b\\d+\\.(?!\\.)\\d*" },
+        { "name": "constant.numeric.integer.tsuya", "match": "\\b\\d+\\b" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "constant.language.tsuya", "match": "(?<![\\p{L}\\p{N}_])(истина|ложь)(?![\\p{L}\\p{N}_])" },
+        {
+          "name": "keyword.control.tsuya",
+          "match": "(?<![\\p{L}\\p{N}_])(если|то|иначе|пока|для|вернуть|вилка|когда|любое|нч|кц)(?![\\p{L}\\p{N}_])"
+        },
+        {
+          "name": "keyword.operator.word.tsuya",
+          "match": "(?<![\\p{L}\\p{N}_])(и|или|либо|лбс|пбс|ост|как)(?![\\p{L}\\p{N}_])"
+        },
+        {
+          "name": "keyword.other.tsuya",
+          "match": "(?<![\\p{L}\\p{N}_])(пер|про|конст|структ|вкл|внешняя|библ)(?![\\p{L}\\p{N}_])"
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "match": "(?<![\\p{L}\\p{N}_])(про)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)",
+          "captures": { "1": { "name": "keyword.other.tsuya" }, "2": { "name": "entity.name.function.tsuya" } }
+        },
+        {
+          "match": "(?<![\\p{L}\\p{N}_])(структ)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)",
+          "captures": { "1": { "name": "keyword.other.tsuya" }, "2": { "name": "entity.name.type.struct.tsuya" } }
+        },
+        {
+          "match": "(?<![\\p{L}\\p{N}_])(конст)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)",
+          "captures": { "1": { "name": "keyword.other.tsuya" }, "2": { "name": "variable.other.constant.tsuya" } }
+        }
+      ]
+    },
+    "types": {
+      "name": "support.type.tsuya",
+      "match": "(?<![\\p{L}\\p{N}_])(цел|цел64|нат|нат64|нат8|вещ|вещ32|строка|лог|массив|срез)(?![\\p{L}\\p{N}_])"
+    },
+    "builtins": {
+      "name": "support.function.builtin.tsuya",
+      "match": "(?<![\\p{L}\\p{N}_])(печать|ввод|срез|сисвызов|размер|адрес)(?![\\p{L}\\p{N}_])(?=\\s*\\()"
+    },
+    "calls": {
+      "name": "entity.name.function.call.tsuya",
+      "match": "(?<![\\p{L}\\p{N}_])[\\p{L}_][\\p{L}\\p{N}_]*(?=\\s*\\()"
+    },
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.assignment.tsuya", "match": ":=" },
+        { "name": "keyword.operator.range.tsuya", "match": "\\.\\." },
+        { "name": "keyword.operator.comparison.tsuya", "match": "[+-]\\?=?|!=|=" },
+        { "name": "keyword.operator.arithmetic.tsuya", "match": "[-+*/]" },
+        { "name": "keyword.operator.logical.tsuya", "match": "!" }
+      ]
+    }
+  }
+}
