@@ -1,9 +1,9 @@
 {
-  "name": "tsuya",
+  "name": "cuya",
   "displayName": "Хороший Учебный Язык (ЦУЯ)",
   "description": "Подсветка синтаксиса языка ЦУЯ",
   "version": "0.2.0",
-  "publisher": "tsuya",
+  "publisher": "cuya",
   "license": "SEE LICENSE IN ../../ЛИЦЕНЗИЯ",
   "engines": {
     "vscode": "^1.75.0"
@@ -14,10 +14,10 @@
   "contributes": {
     "languages": [
       {
-        "id": "tsuya",
+        "id": "cuya",
         "aliases": [
           "ЦУЯ",
-          "tsuya"
+          "cuya"
         ],
         "extensions": [
           ".цуя"
@@ -27,14 +27,14 @@
     ],
     "grammars": [
       {
-        "language": "tsuya",
-        "scopeName": "source.tsuya",
-        "path": "./syntaxes/tsuya.tmLanguage.json"
+        "language": "cuya",
+        "scopeName": "source.cuya",
+        "path": "./syntaxes/cuya.tmLanguage.json"
       }
     ],
     "commands": [
       {
-        "command": "tsuya.run",
+        "command": "cuya.run",
         "title": "ЦУЯ: Запустить файл",
         "icon": "$(play)"
       }
@@ -42,20 +42,18 @@
     "menus": {
       "editor/title/run": [
         {
-          "command": "tsuya.run",
-          "when": "resourceLangId == tsuya",
+          "command": "cuya.run",
+          "when": "resourceLangId == cuya",
           "group": "navigation@1"
         }
       ]
     }
   },
   "main": "./extension.js",
-  "activationEvents": [
-    "onLanguage:tsuya"
-  ],
+  "activationEvents": [],
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
-    "vscode-languageserver": "^9.0.1",
+    "vscode-languageclient": "^11.0.0",
+    "vscode-languageserver": "^11.0.0",
     "vscode-languageserver-textdocument": "^1.0.11"
   }
 }

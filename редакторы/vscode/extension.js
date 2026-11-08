@@ -24,7 +24,7 @@ async function запустить(uri) {
 
   const strong = vscode.ShellQuoting.Strong;
   const задача = new vscode.Task(
-    { type: 'tsuya' },
+    { type: 'cuya' },
     vscode.TaskScope.Workspace,
     'запустить ' + path.basename(uri.fsPath),
     'цуя',
@@ -38,14 +38,14 @@ async function запустить(uri) {
 }
 
 function activate(context) {
-  context.subscriptions.push(vscode.commands.registerCommand('tsuya.run', запустить));
+  context.subscriptions.push(vscode.commands.registerCommand('cuya.run', запустить));
 
   const модуль = context.asAbsolutePath('server.js');
   клиент = new LanguageClient(
-    'tsuya', 'ЦУЯ',
+    'cuya', 'ЦУЯ',
     { run: { module: модуль, transport: TransportKind.ipc },
       debug: { module: модуль, transport: TransportKind.ipc } },
-    { documentSelector: [{ scheme: 'file', language: 'tsuya' }] });
+    { documentSelector: [{ scheme: 'file', language: 'cuya' }] });
   клиент.start();
 }
 

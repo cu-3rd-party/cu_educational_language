@@ -353,7 +353,7 @@ function найтиОбъявление(документ, позиция, имя
 }
 
 function документация(о) {
-  const код = '```tsuya\n' + о.подпись + '\n```';
+  const код = '```cuya\n' + о.подпись + '\n```';
   const части = [код];
   if (о.док) части.push(о.док);
   if (о.модуль) части.push(`_модуль «${о.модуль}»_`);
@@ -465,10 +465,10 @@ function элементДополнения(о, документ, нужноВк
   if (о) return { contents: документация(о) };
   const встроенная = ВСТРОЕННЫЕ.find(в => в.имя === имя);
   if (встроенная) {
-    return { contents: { kind: MarkupKind.Markdown, value: '```tsuya\n' + встроенная.подпись + '\n```\n\n' + встроенная.док } };
+    return { contents: { kind: MarkupKind.Markdown, value: '```cuya\n' + встроенная.подпись + '\n```\n\n' + встроенная.док } };
   }
   const тип = ТИПЫ.find(([т]) => т === имя);
-  return тип ? { contents: { kind: MarkupKind.Markdown, value: '```tsuya\n' + имя + '\n```\n\n' + тип[1] } } : null;
+  return тип ? { contents: { kind: MarkupKind.Markdown, value: '```cuya\n' + имя + '\n```\n\n' + тип[1] } } : null;
 });
 
 // Подсказка параметров при вызове: находим незакрытую «(» слева от курсора.
